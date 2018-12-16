@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JonnyIsBoss</title>
+    <meta charset="utf-8" />
+    <style>
+      canvas {background: lightgray;}
+    </style>
+  </head>
+ <body>
+  <canvas id="myCanvas" width="500" height="800"></canvas>
+  <script src="objects.js"></script>
+  <script>
+  // canvas related vars
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+  let cars = [];
+  var position = 1
+  var left = false, right = false;
+  let speed = 30;
+  let maxcd = 0;
+  var cd = maxcd;
+  let score = 0;
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+  function keyDownHandler(e) {
+    if(e.keyCode == 37) {
+      left = true;
+    }
+    else if(e.keyCode == 39) {
+      right = true;
+    }
+  }
+  function keyUpHandler(e) {
+    if(e.keyCode == 37) {
+      left = false;
+    }
+    else if(e.keyCode == 39) {
+      right = false;
+    }
+  }
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+  function spawn() {
+    let spawn = getRndInteger(0,2)
+    let x = 0;
+    if (spawn == 0) {
+      x = canvas.width/4-player.width/2;
+    }
+    else if (spawn == 1) {
+      x = 2*canvas.width/4-player.width/2;
+    }
+    else if (spawn == 2) {
+      x = 3*canvas.width/4-player.width/2;
+    }
+    cars.push(new Object(x,-100,50,60,"blue"));
+  }
+  let player = new Object(canvas.width/2-50/2,canvas.height-100,50,50,"orange");
+  let border = new Object(0,canvas.height-5,canvas.width,50,"red");
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    maxcd = speed/2;
+    if (position == 0 && right) {
+      position++;
+      right = false;
+    }
+    else if (position == 1 && left) {
+      position--;
+      left = false;
+    }
+    else if (position == 1 && right) {
+      position++;
+      right = false;
+    }
+    else if (position == 2 && left) {
+      position--;
+      left = false;
+    }
+    if (position == 0) {
+      player.x = canvas.width/4-player.width/2;
+    }
+    else if (position == 1) {
+      player.x = 2*canvas.width/4-player.width/2;
+    }
+    else if (position == 2) {
+      player.x = 3*canvas.width/4-player.width/2;
+    }
+    //console.log(position)
+    player.draw();
+    if (cd == 0) {
+      spawn();
+      cd = maxcd;
+    }
+    if (cd != 0) {
+      cd--
+      //console.log(cdDodge)
+    }
+    border.draw();
+    //Enemy draw + collision notallow //Change speed on some
+    for (var i = 0; i < cars.length; i++) {
+      let car = cars[i];
+      car.y += speed;
+      car.draw();
+      if (player.collision(car)) {
+        console.log("hit");
+        score = 0;
+      }
+      if (border.collision(car)) {
+        cars.splice(i,1);
+        score++;
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  </script>
+ </body>
+</html>

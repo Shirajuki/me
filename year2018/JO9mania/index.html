@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+ <head>
+  <title>JonnyIsBoss</title>
+  <meta charset="utf-8" />
+<style>
+	canvas{background: black;}
+	* { padding: 0; margin: 0; }
+    canvas {display: block; margin: 0 auto; }
+</style>
+ <body>
+
+  <canvas id="myCanvas" width="580" height="800"></canvas>
+<script>
+// Variables
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+/*
+///[<]/[^]/[v]/[>]/////[<^]/[<v]/[^>]/[v>]/[<>]/[v^]/////
+////1///2///3///4///////5////6////7////8////9////10//////
+*/
+let map = [0,0,0,1,1,1,1,1,1,1,4,1,1,2,3,4,4,3,2,1,1,2,3,4,4,3,2,1,1,2,3,4,1,1,1,1,1,1,1,1,1];
+/*
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+*/
+let gameStatus = false;
+let bot = false;
+let cooldown = 15; //6
+let speed = 10; //18
+let color1 = "aqua";
+let color2 = "silver";
+let backgroundc = "black"
+let combo = 0;
+let click1 = false,click2 = false,click3 = false,click4 = false;
+let clickTime1 = 0,clickTime2 = 0,clickTime3 = 0,clickTime4 = 0;
+let hit1 = false,hit2 = false,hit3 = false,hit4 = false;
+let dx, dy;
+let shots = []
+let bb = canvas.getBoundingClientRect();
+let offsetX = bb.left;
+let offsetY = bb.top;
+
+window.onload = loading
+function loading() {
+  if (gameStatus) {
+    draw();
+  }else {
+    drawMenu();
+  }
+  draw();
+}
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
+function randomizer() {
+	let a = getRndInteger(1,6);
+  if (a > 4){
+    let b = getRndInteger(5,10)
+    map.push(b);
+  }else{
+    map.push(a);
+  }
+}
+// movement and keys
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
+let clickCD1 = 0, clickCD2 = 0, clickCD3 = 0, clickCD4 = 0;
+function keyDownHandler(e) { //KEY HIT DOWN
+    if(e.keyCode == 83) { //s
+      if (clickCD1 == 0) {
+        click1 = true;
+        clickCD1++;
+      }
+		     hit1 = true;
+    }
+    if(e.keyCode == 68) { //d
+      if (clickCD2 == 0) {
+        click2 = true;
+        clickCD2++;
+      }
+		    hit2 = true;
+    }
+    if(e.keyCode == 75) { //k
+      if (clickCD3 == 0) {
+        click3 = true;
+        clickCD3++;
+      }
+		    hit3 = true;
+    }
+    if(e.keyCode == 76) { //l
+      if (clickCD4 == 0) {
+        click4 = true;
+        clickCD4++;
+      }
+		    hit4 = true;
+    }
+}
+function keyUpHandler(e) { //KEY HIT UP
+	if(e.keyCode == 83) { //s
+		hit1 = false;
+    click1 = false;
+    clickCD1 = 0;
+	}
+	if(e.keyCode == 68) { //s
+		hit2 = false;
+    click2 = false;
+    clickCD2 = 0;
+	}
+	if(e.keyCode == 75) { //s
+		hit3 = false;
+    click3 = false;
+    clickCD3 = 0;
+	}
+	if(e.keyCode == 76) { //s
+		hit4 = false;
+    click4 = false;
+    clickCD4 = 0;
+	}
+}
+function mouseMoveHandler(e) {
+  let relativeX = e.clientX - canvas.offsetLeft;
+	let relativeY = e.clientY;
+}
+// bullets
+function Shot(x, y, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+}
+Shot.prototype.draw = function () {
+    ctx.beginPath();
+    ctx.fillStyle = color2;
+    ctx.arc(this.x, this.y, 40, 0, Math.PI*2);
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.fillStyle = color1;
+    ctx.arc(this.x, this.y, 37, 0, Math.PI*2);
+    ctx.fill();
+    ctx.closePath();
+}
+// cooldown for bullet time
+let cd = cooldown;
+let i = 0;
+function mapCheck() {
+  if(cd == 0 && i < map.length) {
+    i++
+    if(map[i] > 4){
+      if(map[i] == 5){
+        shots.push(new Shot(115, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(235, 0, dx, dy, Math.PI*2));
+      }
+      if(map[i] == 6){
+        shots.push(new Shot(115, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(355, 0, dx, dy, Math.PI*2));
+      }
+      if(map[i] == 7){
+        shots.push(new Shot(235, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(475, 0, dx, dy, Math.PI*2));
+      }
+      if(map[i] == 8){
+        shots.push(new Shot(355, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(475, 0, dx, dy, Math.PI*2));
+      }
+      if(map[i] == 9){
+        shots.push(new Shot(115, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(475, 0, dx, dy, Math.PI*2));
+      }
+      if(map[i] == 10){
+        shots.push(new Shot(235, 0, dx, dy, Math.PI*2));
+        shots.push(new Shot(355, 0, dx, dy, Math.PI*2));
+      }
+    }else{
+      shots.push(new Shot((map[i]*115 + ((map[i]-1)*5)), 0, dx, dy, Math.PI*2));
+    }
+  }
+}
+function drawUI() { // DRAW UI
+  ctx.beginPath();
+  ctx.fillStyle = "Gray";
+  ctx.arc(115, 685, 44, 0, Math.PI*2);
+  ctx.arc(235, 685, 44, 0, Math.PI*2);
+  ctx.arc(355, 685, 44, 0, Math.PI*2);
+  ctx.arc(475, 685, 44, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawDetect1() {
+  ctx.beginPath();
+  ctx.fillStyle = "Pink";
+  ctx.arc(115, 685, 46, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawDetect2() {
+  ctx.beginPath();
+  ctx.fillStyle = "Pink";
+  ctx.arc(235, 685, 46, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawDetect3() {
+  ctx.beginPath();
+  ctx.fillStyle = "Pink";
+  ctx.arc(355, 685, 46, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawDetect4() {
+  ctx.beginPath();
+  ctx.fillStyle = "Pink";
+  ctx.arc(475, 685, 46, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawCombo() {
+	ctx.beginPath();
+  ctx.font = "bold 60px Arial";
+	ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+	ctx.fillText(combo, 290, 350);
+	ctx.closePath();
+}
+function drawPerfect() {
+	ctx.beginPath();
+  ctx.font = "bold 60px Arial";
+	ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+	ctx.fillText("Perfect!", 290, 450);
+	ctx.closePath();
+}
+let hpY = 430;
+function hpGauge() {
+	ctx.beginPath();
+	ctx.fillStyle = "red";
+	ctx.rect(560, hpY, 20, 400);
+	ctx.lineWidth = 15;
+  ctx.fill();
+  ctx.closePath();
+    ctx.beginPath();
+  	ctx.fillStyle = backgroundc;
+  	ctx.rect(560, 450, 20, 60);
+    ctx.fill();
+    ctx.closePath();
+}
+function test1() {
+	ctx.beginPath();
+	ctx.fillStyle = "red";
+	ctx.rect(0, 640, 1000, 10);
+  ctx.rect(0, 720, 1000, 10);
+
+  ctx.rect(0, 620, 1000, 10);
+  ctx.rect(0, 740, 1000, 10);
+	ctx.lineWidth = 15;
+  ctx.fill();
+  ctx.closePath();
+}
+let showTime = 20;
+function drawMenu() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
+  ctx.fillStyle = "red";
+  ctx.rect(190, 500, 210, 100);
+  ctx.fill();
+  ctx.closePath();
+  ctx.beginPath();
+  ctx.font = "bold 60px Arial";
+	ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+	ctx.fillText("Start", canvas.width/2, 580);
+  ctx.closePath();
+
+  requestAnimationFrame(drawMenu);
+}
+// draw animation
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawUI(); //DRAW UI
+	mapCheck(); //CHECK MAP
+  hpGauge(); // HP BAR
+	randomizer(); //RANDOMIZE MAPPATTERN
+  //test1();
+  if (combo !== 0) {
+    drawCombo();
+  }
+	if (hit1) {
+		drawDetect1();
+	}
+	if (hit2) {
+		drawDetect2();
+	}
+	if (hit3) {
+		drawDetect3();
+	}
+	if (hit4) {
+		drawDetect4();
+	}
+  if (hpY < 500) { //HP CHECK
+    hpY = 500;
+  }
+  if (hpY >= canvas.height) { // GAMEOVER
+    gameStatus = false;
+  }
+	requestAnimationFrame(draw);
+//// --
+	if (cd !== 0) {
+		cd--
+	}else{
+    cd = cooldown;
+    //console.log(shots);
+  }
+  if (clickTime1 !== 0) {
+		clickTime1--
+	}else{
+    clickTime1 = showTime;
+  }
+  if (clickTime2 !== 0) {
+		clickTime2--
+	}else{
+    clickTime2 = showTime;
+  }
+  if (clickTime3 !== 0) {
+		clickTime3--
+	}else{
+    clickTime3 = showTime;
+  }
+  if (clickTime4 !== 0) {
+		clickTime4--
+	}else{
+    clickTime4 = showTime;
+  }
+//// --
+	// shoot commands
+	if (shots.length == 0) {
+        return;
+    }
+	let a = [];
+	for (let i = 0; i < shots.length; i++) { //HITDETECTION
+		let shot = shots[i];
+			shot.y += speed;
+			if (shot.x >= 0 && shot.x <= canvas.width && shot.y >= 0 && shot.y <= canvas.height) {
+			a.push(shot);
+			shot.draw();
+		}//shot detect at perfect
+		if(shot.y > 630 && shot.y <= 725 && click1) {
+			a.pop(shot);
+			combo++;
+      click1 = false;
+      hpY -= 7;
+      if (clickTime1 !== showTime) {
+        new drawPerfect;
+      }
+		}
+		if(shot.y > 630 && shot.y <= 725 && click2) {
+			a.pop(shot);
+			combo++;
+      click2 = false;
+      hpY -= 7;
+      if (clickTime2 !== showTime) {
+        new drawPerfect;
+      }
+		}
+		if(shot.y > 630 && shot.y <= 725 && click3) {
+			a.pop(shot);
+			combo++;
+      click3 = false;
+      hpY -= 7;
+      if (clickTime3 !== showTime) {
+        new drawPerfect;
+      }
+		}
+		if(shot.y > 630 && shot.y <= 725 && click4) {
+			a.pop(shot);
+			combo++;
+      click4 = false;
+      hpY -= 7;
+      if (clickTime4 !== showTime) {
+        new drawPerfect;
+      }
+		}
+		if (shot.y > 700 && shot.y <= 800){
+			combo = 0;
+      hpY += 4;
+		}
+    //bot mode
+		if (click1 == false && bot || click2 == false && bot || click3 == false && bot || click4 == false && bot ) {
+			click1 = true;
+			click2 = true;
+			click3 = true;
+			click4 = true;
+		}
+	}
+  // if shots went off-canvas, remove them from shots[]
+  if (a.length < shots.length) {
+      shots.length = 0;
+      Array.prototype.push.apply(shots, a);
+  }
+}
+</script>
+ </body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TetrisIsBoss</title>
+    <meta charset="utf-8" />
+    <style>
+      canvas {background: lightgray;}
+      body {display: flex;justify-content: center;}
+    </style>
+  </head>
+ <body>
+  <canvas id="myCanvas" width="400" height="440"></canvas>
+  <script>
+  // canvas related vars
+  window.onload = oppstart;
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+  let normalSpeed = 7;
+  let frameSpeed = normalSpeed; //5
+  var cd = frameSpeed;
+  var size = 20;
+  var padding = 10;
+  let map = [];
+  let hit = false;
+  let controlBlock = [
+    {x:0,y:0},
+    {x:0,y:0},
+    {x:0,y:0},
+    {x:0,y:0},
+    0,
+    1
+  ]
+  let tetrominos = [
+    [
+      [0,0,0,0,
+       0,0,0,0,
+       1,1,1,1,
+       0,0,0,0],
+      [1,0,0,0,
+       1,0,0,0,
+       1,0,0,0,
+       1,0,0,0],
+      [0,0,0,0,
+       0,0,0,0,
+       1,1,1,1,
+       0,0,0,0],
+      [1,0,0,0,
+       1,0,0,0,
+       1,0,0,0,
+       1,0,0,0]
+    ],// I 1
+    [
+      [0,0,0,0,
+       0,0,0,0,
+       2,2,2,0,
+       0,0,2,0],
+      [0,0,0,0,
+       0,2,0,0,
+       0,2,0,0,
+       2,2,0,0],
+      [0,0,0,0,
+       0,0,0,0,
+       2,0,0,0,
+       2,2,2,0],
+      [0,0,0,0,
+       2,2,0,0,
+       2,0,0,0,
+       2,0,0,0]
+    ],// J 2
+    [
+      [0,0,0,0,
+       0,0,0,0,
+       3,3,3,0,
+       3,0,0,0],
+      [0,0,0,0,
+       3,3,0,0,
+       0,3,0,0,
+       0,3,0,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,0,3,0,
+       3,3,3,0],
+      [0,0,0,0,
+       3,0,0,0,
+       3,0,0,0,
+       3,3,0,0]
+    ],// L 3
+    [
+      [0,0,0,0,
+       0,0,0,0,
+       0,4,4,0,
+       0,4,4,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,4,4,0,
+       0,4,4,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,4,4,0,
+       0,4,4,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,4,4,0,
+       0,4,4,0]
+    ],// O 4
+    [
+      [0,0,0,0,
+       0,0,0,0,
+       0,5,5,0,
+       5,5,0,0],
+      [0,0,0,0,
+       0,5,0,0,
+       0,5,5,0,
+       0,0,5,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,5,5,0,
+       5,5,0,0],
+      [0,0,0,0,
+       0,5,0,0,
+       0,5,5,0,
+       0,0,5,0]
+     ],// S 5
+     [
+      [0,0,0,0,
+       0,0,0,0,
+       6,6,6,0,
+       0,6,0,0],
+      [0,0,0,0,
+       0,6,0,0,
+       6,6,0,0,
+       0,6,0,0],
+      [0,0,0,0,
+       0,0,0,0,
+       0,6,0,0,
+       6,6,6,0],
+      [0,0,0,0,
+       6,0,0,0,
+       6,6,0,0,
+       6,0,0,0]
+     ],// T 6
+     [
+       [0,0,0,0,
+        0,0,0,0,
+        7,7,0,0,
+        0,7,7,0],
+       [0,0,0,0,
+        0,0,7,0,
+        0,7,7,0,
+        0,7,0,0],
+       [0,0,0,0,
+        0,0,0,0,
+        7,7,0,0,
+        0,7,7,0],
+       [0,0,0,0,
+        0,0,7,0,
+        0,7,7,0,
+        0,7,0,0]
+    ],// Z 7
+  ];
+  var left = false, right = false, down = false; up = false;
+  function oppstart() {
+    map = resetMap();
+    draw();
+    spawn();
+  }
+  function resetMap() {
+    let map =[
+      [0,0,0,0,0,0,0,0,0,0], //0 //
+      [0,0,0,0,0,0,0,0,0,0], //1
+      [0,0,0,0,0,0,0,0,0,0], //2
+      [0,0,0,0,0,0,0,0,0,0], //3
+      [0,0,0,0,0,0,0,0,0,0], //4
+      [0,0,0,0,0,0,0,0,0,0], //5
+      [0,0,0,0,0,0,0,0,0,0], //6
+      [0,0,0,0,0,0,0,0,0,0], //7
+      [0,0,0,0,0,0,0,0,0,0], //8
+      [0,0,0,0,0,0,0,0,0,0], //9
+      [0,0,0,0,0,0,0,0,0,0], //10
+      [0,0,0,0,0,0,0,0,0,0], //11
+      [0,0,0,0,0,0,0,0,0,0], //12
+      [0,0,0,0,0,0,0,0,0,0], //13
+      [0,0,0,0,0,0,0,0,0,0], //14
+      [0,0,0,0,0,0,0,0,0,0], //15
+      [0,0,0,0,0,0,0,0,0,0], //16
+      [0,0,0,0,0,0,0,0,0,0], //17
+      [0,0,0,0,0,0,0,0,0,0], //18
+      [0,0,0,0,0,0,0,0,0,0], //19
+      [0,0,0,0,0,0,0,0,0,0], //20
+      [9,9,9,9,8,8,9,9,9,9]  //21 //
+    ];
+    return map;
+  }
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+  function keyDownHandler(e) {
+    if(e.keyCode == 37) {
+      left = true; //move left
+    }
+    else if(e.keyCode == 38) {
+      up = true; //rotate clockwise
+    }
+    else if(e.keyCode == 39) {
+      right = true; //move right
+    }
+    else if(e.keyCode == 40) {
+      down = true; //soft drop
+    }
+  }
+  function keyUpHandler(e) {
+    if(e.keyCode == 37) {
+      left = false;
+    }
+    else if(e.keyCode == 38) {
+      up = false;
+    }
+    else if(e.keyCode == 39) {
+      right = false;
+    }
+    else if(e.keyCode == 40) {
+      down = false;
+    }
+  }
+  function resetKey() {
+    left = false;
+    up = false;
+    down = false;
+    right = false;
+  }
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+  function spawn() {
+    let rnd = getRndInteger(0,6);
+    rnd = 0;
+    let tetromino = tetrominos[rnd];
+    let count = 0;
+    for (var j = 0; j < tetromino[0].length; j++) {
+      if (tetromino[0][j] !== 0) {
+        controlBlock[count].x = j%4 +3;
+        controlBlock[count].y = 0;
+        if (j >= 12) {
+          controlBlock[count].y = 1;
+        }
+        count++;
+      }
+    }
+    controlBlock[4] = rnd+1;
+    controlBlock[5] = 0;
+  }
+  function rotate() {
+    controlBlock[5]++;
+    if (controlBlock[5] == 4) {
+      controlBlock[5] = 0;
+    }
+    let tetromino = tetrominos[controlBlock[4]-1];
+    let count = 0;
+    let corex = controlBlock[2].x -1;
+    let corey = controlBlock[2].y -1;
+    for (var j = 0; j < tetromino[controlBlock[5]].length; j++) {
+      if (tetromino[controlBlock[5]][j] !== 0) {
+        controlBlock[count].x = j%4 + corex;
+        controlBlock[count].y = corey;
+        if (j >= 4) {
+          controlBlock[count].y = corey+1;
+        }
+        if (j >= 8) {
+          controlBlock[count].y = corey+2;
+        }
+        if (j >= 12) {
+          controlBlock[count].y = corey+3;
+        }
+        count++;
+      }
+    }
+  }
+  function drawObject(x,y,cFill,cStroke,width,height,type = 0) {
+    ctx.fillStyle = cFill;
+    ctx.strokeStyle = cStroke;
+    if (type == 0) {
+      ctx.fillRect(x, y, width, height);
+    }
+    ctx.strokeRect(x, y, width, height);
+  }
+  //if (head.x > canvas.width-2*padding-10 || head.x < padding || head.y < padding || head.y > canvas.height-2*padding-10-20) { //BOX
+  function drawColor(number) {
+    let fill = "";
+    if (number == 1) {
+     fill = "cyan";
+    }
+    else if (number == 2) {
+     fill = "blue";
+    }
+    else if (number == 3) {
+     fill = "orange";
+    }
+    else if (number == 4) {
+     fill = "yellow";
+    }
+    else if (number == 5) {
+     fill = "green";
+    }
+    else if (number == 6) {
+     fill = "purple";
+    }
+    else if (number == 7) {
+     fill = "red";
+    }
+    return fill;
+  }
+  function moveMap(map,n) {
+    for (var i = n; i >= 1; i--) {
+      map[i] = map[i-1];
+    }
+  }
+  function draw() {
+    if (cd == 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 1; i < (map.length-1); i++) {
+        if (map[i].indexOf(0) == -1) {
+          map[i] = [0,0,0,0,0,0,0,0,0,0];
+          moveMap(map,i);
+        }
+        for (var j = 0; j < map[i].length; j++) {
+          if (map[i][j] !== 0) {
+            drawObject(size*j+size,size*i,drawColor(map[i][j]),"black",size,size);
+          }
+          if (map[0][j] !== 0) {
+            console.log("game lose");
+            map = resetMap();
+          }
+        }
+      }
+      let checks1 = (controlBlock[0].x <= 0 || controlBlock[1].x <= 0 || controlBlock[2].x <= 0 || controlBlock[3].x <= 0);
+      let checks2 = (controlBlock[0].x >= 9 || controlBlock[1].x >= 9 || controlBlock[2].x >= 9 || controlBlock[3].x >= 9);
+      if (left && !checks1 && !hit) {
+        controlBlock[0].x--;
+        controlBlock[1].x--;
+        controlBlock[2].x--;
+        controlBlock[3].x--;
+      }
+      if (right && !checks2 && !hit) {
+        controlBlock[0].x++;
+        controlBlock[1].x++;
+        controlBlock[2].x++;
+        controlBlock[3].x++;
+      }
+      if (up) {
+        rotate();
+      }
+      if (down) {
+        frameSpeed = 1;
+      }else {
+        frameSpeed = normalSpeed;
+      }
+      for (var i = controlBlock.length-2; i >= 0; i--) {
+        let block = controlBlock[i];
+        drawObject(size*block.x+size,size*block.y,drawColor(controlBlock[4]),"black",size,size);
+      }
+      if (map[controlBlock[0].y+1][controlBlock[0].x] !== 0 || map[controlBlock[1].y+1][controlBlock[1].x] !== 0 || map[controlBlock[2].y+1][controlBlock[2].x] !== 0 || map[controlBlock[3].y+1][controlBlock[3].x] !== 0) {
+        map[controlBlock[0].y][controlBlock[0].x] = controlBlock[4];
+        map[controlBlock[1].y][controlBlock[1].x] = controlBlock[4];
+        map[controlBlock[2].y][controlBlock[2].x] = controlBlock[4];
+        map[controlBlock[3].y][controlBlock[3].x] = controlBlock[4];
+        hit = true;
+        setTimeout(function() {
+          spawn();
+        },100);
+      } else {
+        hit = false;
+        controlBlock[0].y++;
+        controlBlock[1].y++;
+        controlBlock[2].y++;
+        controlBlock[3].y++;
+      }
+      drawObject(2*padding,padding,'black','black',canvas.width-4*padding-160,canvas.height-3*padding,1);
+      cd = frameSpeed;
+    }else {
+      cd--;
+    }
+    requestAnimationFrame(draw);
+  }
+  </script>
+ </body>
+</html>

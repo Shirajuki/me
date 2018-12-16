@@ -1,0 +1,21 @@
+/* main container */
+body {
+	font-family: Calibri,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	color: DeepPink;
+	background-color: #222;
+	margin: 0 0 0 0px;
+}
+div#content {
+	border: 5px solid DeepPink;
+	border-radius: 10px;
+	background-color: rgba(0,0,0,0.5);
+	float: left;
+	position: fixed;
+	text-align: center;
+	font-weight: bold;
+	top: 50%;
+	left: 50%;
+	padding: 15px;
+	transform: translate(-50%,-50%);
+	text-shadow: 0px 1px 1px rgba(0,0,0,0.75);
+}

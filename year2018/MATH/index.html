@@ -1,0 +1,461 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JonnyIsBoss</title>
+    <meta charset="utf-8" />
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <style>
+      * { padding: 0; margin: 0; }
+      canvas { background: #eeed; display: block; border:13px solid black; border-radius: 20px; }
+    </style>
+  </head>
+  <body>
+
+    <canvas id="myCanvas" width="400" height="700"></canvas>
+    <script>
+    let canvas = document.getElementById("myCanvas");
+    let ctx = canvas.getContext("2d");
+
+    let a = 'a', b = 'b', x = " - " , answer;
+    let min1, max1, min2, max2, minr, maxr;
+    let problemDisplay, inputDisplay = 0, inputDisplayColor = "black";
+    let numpadColor7 = "black", numpadColor8 = "black", numpadColor9 = "black";
+    let numpadColor4 = "black", numpadColor5 = "black", numpadColor6 = "black";
+    let numpadColor1 = "black", numpadColor2 = "black", numpadColor3 = "black";
+    let numpadColor0 = "black", numpadColorClear = "black", numpadColorTips = "black", numpadColorRefresh = "black";
+    let correctDetectColor = "white";
+
+    window.onload = loading
+    function loading() {
+      updateDifficulty();
+      newProblem();
+      draw();
+    }
+    drawCanvas();
+    document.addEventListener("keydown", keyDownHandler, false);
+    function keyDownHandler(e) {
+      if(e.keyCode == 13) {
+        submit();
+      }//
+	  if(e.keyCode == 49) {
+        inputDisplay = inputDisplay + "1";
+      }
+	  if(e.keyCode == 50) {
+        inputDisplay = inputDisplay + "2";
+      }
+	  if(e.keyCode == 51) {
+        inputDisplay = inputDisplay + "3";
+      }
+	  if(e.keyCode == 52) {
+        inputDisplay = inputDisplay + "4";
+      }
+	  if(e.keyCode == 53) {
+        inputDisplay = inputDisplay + "5";
+      }
+	  if(e.keyCode == 54) {
+		inputDisplay = inputDisplay + "6";
+      }
+	  if(e.keyCode == 55) {
+		inputDisplay = inputDisplay + "7";
+      }
+	  if(e.keyCode == 56) {
+		inputDisplay = inputDisplay + "8";
+      }
+	  if(e.keyCode == 57) {
+        inputDisplay = inputDisplay + "9";
+      }
+	  if(e.keyCode == 48) {
+        inputDisplay = inputDisplay + "0";
+      }
+	  if(e.keyCode == 8) {
+        inputDisplay = "";
+      }
+    }
+    canvas.addEventListener("mousemove", mouseMoveHandler, false);
+		canvas.addEventListener("mousedown", mouseDownHandler, false);
+    function mouseMoveHandler(e) {
+      let relativeX = e.clientX - canvas.offsetLeft;
+    	let relativeY = e.clientY;
+    	if(relativeX > 100 && relativeX < 175 && relativeY > 475-65 && relativeY < 545-65) {
+        numpadColor7 = "DeepPink"
+    	}else{
+    		numpadColor7 = "Black"
+    	}
+      if(relativeX > 175 && relativeX < 250 && relativeY > 475-65 && relativeY < 545-65) {
+        numpadColor8 = "DeepPink"
+    	}else{
+    		numpadColor8 = "Black"
+    	}
+      if(relativeX > 250 && relativeX < 325 && relativeY > 475-65 && relativeY < 545-65) {
+        numpadColor9 = "DeepPink"
+    	}else{
+    		numpadColor9 = "Black"
+    	}
+      if(relativeX > 100 && relativeX < 175 && relativeY > 550-65 && relativeY < 620-65) {
+        numpadColor4 = "DeepPink"
+    	}else{
+    		numpadColor4 = "Black"
+    	}
+      if(relativeX > 175 && relativeX < 250 && relativeY > 550-65 && relativeY < 620-65) {
+        numpadColor5 = "DeepPink"
+    	}else{
+    		numpadColor5 = "Black"
+    	}
+      if(relativeX > 250 && relativeX < 325 && relativeY > 550-65 && relativeY < 620-65) {
+        numpadColor6 = "DeepPink"
+    	}else{
+    		numpadColor6 = "Black"
+    	}
+      if(relativeX > 100 && relativeX < 175 && relativeY > 625-65 && relativeY < 695-65) {
+        numpadColor1 = "DeepPink"
+    	}else{
+    		numpadColor1 = "Black"
+    	}
+      if(relativeX > 175 && relativeX < 250 && relativeY > 625-65 && relativeY < 695-65) {
+        numpadColor2 = "DeepPink"
+    	}else{
+    		numpadColor2 = "Black"
+    	}
+      if(relativeX > 250 && relativeX < 325 && relativeY > 625-65 && relativeY < 695-65) {
+        numpadColor3 = "DeepPink"
+    	}else{
+    		numpadColor3 = "Black"
+    	}
+      if(relativeX > 175 && relativeX < 250 && relativeY > 700-65 && relativeY < 770-65) {
+        numpadColor0 = "DeepPink"
+    	}else{
+    		numpadColor0 = "Black"
+    	}
+      if(relativeX > 355 && relativeX < 430 && relativeY > 670-65 && relativeY < 800-65) {
+        numpadColorClear = "DeepPink"
+    	}else{
+    		numpadColorClear = "Black"
+    	}
+      if(relativeX > 0 && relativeX < 75 && relativeY > 670-65 && relativeY < 800-65) {
+        numpadColorTips = "DeepPink"
+    	}else{
+    		numpadColorTips = "Black"
+    	}
+    }
+    function mouseDownHandler(e) {
+      let relativeX = e.clientX - canvas.offsetLeft;
+    	let relativeY = e.clientY;
+      if(relativeX > 100 && relativeX < 175 && relativeY > 475-65 && relativeY < 545-65) {
+        inputDisplay = inputDisplay + "7";
+      }
+      if(relativeX > 175 && relativeX < 250 && relativeY > 475-65 && relativeY < 545-65) {
+        inputDisplay = inputDisplay + "8";
+      }
+      if(relativeX > 250 && relativeX < 325 && relativeY > 475-65 && relativeY < 545-65) {
+        inputDisplay = inputDisplay + "9";
+      }
+      if(relativeX > 100 && relativeX < 175 && relativeY > 550-65 && relativeY < 620-65) {
+        inputDisplay = inputDisplay + "4";
+      }
+      if(relativeX > 175 && relativeX < 250 && relativeY > 550-65 && relativeY < 620-65) {
+        inputDisplay = inputDisplay + "5";
+      }
+      if(relativeX > 250 && relativeX < 325 && relativeY > 550-65 && relativeY < 620-65) {
+        inputDisplay = inputDisplay + "6";
+      }
+      if(relativeX > 100 && relativeX < 175 && relativeY > 625-65 && relativeY < 695-65) {
+        inputDisplay = inputDisplay + "1";
+      }
+      if(relativeX > 175 && relativeX < 250 && relativeY > 625-65 && relativeY < 695-65) {
+        inputDisplay = inputDisplay + "2";
+      }
+      if(relativeX > 250 && relativeX < 325 && relativeY > 625-65 && relativeY < 695-65) {
+        inputDisplay = inputDisplay + "3";
+      }
+      if(relativeX > 175 && relativeX < 250 && relativeY > 700-65 && relativeY < 770-65) {
+        inputDisplay = inputDisplay + "0";
+      }
+      if(relativeX > 355 && relativeX < 430 && relativeY > 670-65 && relativeY < 800-65) {
+        submit();
+    	}
+      if(relativeX > 0 && relativeX < 75 && relativeY > 670-65 && relativeY < 800-65) {
+        inputDisplay = 0;
+    	}
+      if(relativeX > 350 && relativeX < 400 && relativeY > 85-65 && relativeY < 130-65) {
+        newProblem();
+    	}
+    }
+    function updateDifficulty() {
+      if (document.getElementById('difficulty').value == 'easy') {
+        min1 = 1, max1 = 99;
+        min2 = 1, max2 = 9;
+        if (document.getElementById('divide').checked == true) {
+            minr = 1, maxr = 9;
+      	}
+      }
+      if (document.getElementById('difficulty').value == 'normal') {
+        min1 = 10, max1 = 99;
+        min2 = 1, max2 = 9;
+        if (document.getElementById('divide').checked == true) {
+            minr = 1, maxr = 99;
+      	}
+      }
+      if (document.getElementById('difficulty').value == 'hard') {
+        min1 = 100, max1 = 999;
+        min2 = 1, max2 = 99;
+        if (document.getElementById('divide').checked == true) {
+            minr = 10, maxr = 99;
+      	}
+        if (document.getElementById('multiply').checked == true) {
+            min2 = 10, max2 = 99;
+      	}
+      }
+    }
+    function getRndInteger(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) ) + min;
+    }
+    function newProblem(){
+      updateDifficulty();
+      a = getRndInteger(min1,max1);
+      b = getRndInteger(min2,max2);
+      r = getRndInteger(minr,maxr);
+
+      if (document.getElementById('add').checked == true) {
+        x = " + ";
+        answer = (a + b);
+    	}
+      if (document.getElementById('subtract').checked == true) {
+        x = " - ";
+        answer = (a - b);
+    	}
+      if (document.getElementById('multiply').checked == true) {
+        x = " * ";
+        answer = (a * b);
+    	}
+      if (document.getElementById('divide').checked == true) {
+        x = " / ";
+        answer = ((b*r) / b);
+    	}
+      console.log(a)
+      console.log(b)
+      console.log(answer)
+      draw();
+    }
+    function draw() {
+      if (document.getElementById('divide').checked == true) {
+          problemDisplay = (b*r) + x + b;
+    	}else {
+        problemDisplay = a + x + b;
+      }
+      problemDisplay;
+      drawCanvas();
+    }
+    function drawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); //w.400 h.700
+      drawBorder();
+      drawDisplay();
+      drawNumpad();
+
+      if(inputDisplay > 0){
+        inputDisplayColor = "black"
+      }else{
+        inputDisplayColor = "white"
+      }
+      requestAnimationFrame(draw);
+    }
+    function drawDisplay() {
+      inputDisplays = Number(inputDisplay);
+    	ctx.beginPath();
+    	ctx.font = "bold 72px Arial";
+    	ctx.fillStyle = "#000";
+    	ctx.fillText(problemDisplay, 200, 200);
+      ctx.textAlign = "center";
+    	ctx.closePath();
+
+      ctx.beginPath();
+    	ctx.font = "bold 72px Arial";
+    	ctx.fillStyle = inputDisplayColor;
+    	ctx.fillText(inputDisplays, 200, 350);
+      ctx.textAlign = "center";
+    	ctx.closePath();
+    }
+    function drawNumpad() {
+      num1();
+      num2();
+      num3();
+      num4();
+      num5();
+      num6();
+      num7();
+      num8();
+      num9();
+      num0();
+      numClear();
+      numTips();
+      numRefresh();
+      ctx.beginPath();
+      ctx.rect(90+5, 400+5, 60, 60);//7
+      ctx.rect(165+5, 400+5, 60, 60);//8
+      ctx.rect(240+5, 400+5, 60, 60);//9
+      ctx.rect(90+5, 475+5, 60, 60);//4
+      ctx.rect(165+5, 475+5, 60, 60);//5
+      ctx.rect(240+5, 475+5, 60, 60);//6
+      ctx.rect(90+5, 550+5, 60, 60);//1
+      ctx.rect(165+5, 550+5, 60, 60);//2
+      ctx.rect(240+5, 550+5, 60, 60);//3
+      ctx.rect(165+5, 625+5, 60, 60);//0
+      ctx.rect(340+5, 600+5, 60+10, 100+10);//clear
+      ctx.rect(0, 600+5, 55, 100+10);//tips
+      ctx.fillStyle = "#eee9";
+      ctx.fill();
+      ctx.closePath();
+      ctx.beginPath();
+    	ctx.font = "bold 32px Arial";
+    	ctx.fillText("7", 125, 400+45);
+      ctx.fillText("8", 200, 400+45);
+      ctx.fillText("9", 275, 400+45);
+      ctx.fillText("4", 125, 500+20);
+      ctx.fillText("5", 200, 500+20);
+      ctx.fillText("6", 275, 500+20);
+      ctx.fillText("1", 125, 575+20);
+      ctx.fillText("2", 200, 575+20);
+      ctx.fillText("3", 275, 575+20);
+      ctx.fillText("0", 200, 650+20);
+      ctx.fillText("✓", 375, 650+20);
+      ctx.fillText("🗙", 25, 650+20);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#000";
+    	ctx.closePath();
+    }
+    function numRefresh() {
+      ctx.beginPath();
+    	ctx.font = "bold 32px Arial";
+      ctx.fillText("🔘", 370, 40);
+      ctx.textAlign = "center";
+      ctx.fillStyle = numpadColorRefresh;
+    	ctx.closePath();
+    }
+    function numTips() {
+      ctx.beginPath();
+      ctx.rect(340, 600, 60, 100);//clear
+      ctx.fillStyle = numpadColorClear;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function numClear() {
+      ctx.beginPath();
+      ctx.rect(0, 600, 60, 100);//tips
+      ctx.fillStyle = numpadColorTips;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num7() {
+      ctx.beginPath();
+      ctx.rect(90, 400, 70, 70);//7
+      ctx.fillStyle = numpadColor7;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num8() {
+      ctx.beginPath();
+      ctx.rect(165, 400, 70, 70);//8
+      ctx.fillStyle = numpadColor8;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num9() {
+      ctx.beginPath();
+      ctx.rect(240, 400, 70, 70);//9
+      ctx.fillStyle = numpadColor9;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num4() {
+      ctx.beginPath();
+      ctx.rect(90, 475, 70, 70);//4
+      ctx.fillStyle = numpadColor4;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num5() {
+      ctx.beginPath();
+      ctx.rect(165, 475, 70, 70);//5
+      ctx.fillStyle = numpadColor5;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num6() {
+      ctx.beginPath();
+      ctx.rect(240, 475, 70, 70);//6
+      ctx.fillStyle = numpadColor6;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num1() {
+      ctx.beginPath();
+      ctx.rect(90, 550, 70, 70);//1
+      ctx.fillStyle = numpadColor1;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num2() {
+      ctx.beginPath();
+      ctx.rect(165, 550, 70, 70);//2
+      ctx.fillStyle = numpadColor2;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num3() {
+      ctx.beginPath();
+      ctx.rect(240, 550, 70, 70);//3
+      ctx.fillStyle = numpadColor3;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function num0() {
+      ctx.beginPath();
+      ctx.rect(165, 625, 70, 70);//0
+      ctx.fillStyle = numpadColor0;
+      ctx.fill();
+      ctx.closePath();
+    }
+    function drawBorder() {
+      ctx.beginPath();
+      ctx.rect(0, 360, 1000, 10);
+      ctx.rect(0, 280, 1000, 10);
+      ctx.rect(0, 70, 1000, 10);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+      ctx.closePath();
+      ctx.beginPath();
+      ctx.rect(0, 80, 1000, 200);
+      ctx.fillStyle = correctDetectColor;
+      ctx.fill();
+      ctx.closePath();
+      ctx.beginPath();
+      ctx.rect(0, 290, 1000, 70);
+      ctx.fillStyle = "white";
+      ctx.fill();
+      ctx.closePath();
+    }
+    function submit() {
+      if (inputDisplay == answer) {
+        console.log("Correct!");
+        newProblem();
+        inputDisplay = 0;
+        correctDetectColor = "pink";
+        setTimeout(function(){ correctDetectColor = "white"; }, 500);
+      }
+      updateDifficulty();
+    }
+    </script>
+    <div class="controls" style="position: absolute; top:50px; left:440px;">
+      <form>
+        <input id="add" type="radio" name="type" checked> Add<br>
+        <input id="subtract" type="radio" name="type"> Subtract<br>
+        <input id="multiply" type="radio" name="type"> Multiply<br>
+        <input id="divide" type="radio" name="type"> Divide<br><br>
+      </form>
+      <select id="difficulty">
+        <option value="easy"> Easy
+        <option value="normal"> Normal
+        <option value="hard"> Hard
+      </select>
+    </div>
+  </body>
+</html>

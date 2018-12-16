@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+	<head>
+		<title>TicTacToe</title>
+		<meta charset="utf-8" />
+		<style>
+			body {
+				display: flex;
+				justify-content: center;
+			}
+			table, th, td {
+				width: 33%;
+			}
+			button {
+				font-size: 3em;
+				width: 100%;
+				min-width: 100px;
+				height: 100%;
+				min-height: 100px;
+				background-color: pink;
+				border: 2px solid deeppink;
+			}
+			button:hover {
+				background-color: deeppink;
+				border: 2px solid purple;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			var count = 1;
+			window.onload = oppstart;
+			function oppstart() {
+				for (var i = 1;i <= 3;i++){
+					for (var j = 1;j <= 3;j++) {
+						var tr = document.getElementById("tr"+i)
+						var td = document.createElement("td");
+						var btn = document.createElement("button");
+	          btn.id=count;
+	          btn.onclick = function(){
+	            run(parseInt(this.id));
+						}
+						btn.innerHTML = "";
+	        	tr.appendChild(td);
+						td.appendChild(btn);
+						count++;
+          }
+        }
+			}
+			var table = ["x",
+				"","","",
+				"","","",
+				"","",""]
+			function run(x) {
+				var btn = document.getElementById(x)
+				if (table[0] == "x" && table[x] == "") {
+					table[x] = "x"
+					btn.innerHTML = "X"
+					table[0] = "o"
+				}
+				else if (table[0] == "o"&& table[x] == "") {
+					table[x] = "o"
+					btn.innerHTML = "O"
+					table[0] = "x"
+				}
+				setTimeout(game,1000);
+				console.log(x);
+			}
+			function game() {
+				if
+					(table[1] == "x" && table[2] == "x" && table[3] == "x" ||
+					table[4] == "x" && table[5] == "x" && table[6] == "x" ||
+					table[7] == "x" && table[8] == "x" && table[9] == "x" ||
+					table[1] == "x" && table[4] == "x" && table[7] == "x" ||
+					table[2] == "x" && table[5] == "x" && table[8] == "x" ||
+					table[3] == "x" && table[6] == "x" && table[9] == "x" ||
+					table[1] == "x" && table[5] == "x" && table[9] == "x" ||
+					table[3] == "x" && table[5] == "x" && table[7] == "x") {
+					alert("x win!")
+					table = ["x",
+						"","","",
+						"","","",
+						"","",""]
+					location.reload();
+				}
+				else if
+					(table[1] == "o" && table[2] == "o" && table[3] == "o" ||
+					table[4] == "o" && table[5] == "o" && table[6] == "o" ||
+					table[7] == "o" && table[8] == "o" && table[9] == "o" ||
+					table[1] == "o" && table[4] == "o" && table[7] == "o" ||
+					table[2] == "o" && table[5] == "o" && table[8] == "o" ||
+					table[3] == "o" && table[6] == "o" && table[9] == "o" ||
+					table[1] == "o" && table[5] == "o" && table[9] == "o" ||
+					table[3] == "o" && table[5] == "o" && table[7] == "o") {
+					alert("o win!")
+					table = ["o",
+						"","","",
+						"","","",
+						"","",""]
+					location.reload();
+				}
+				else if (table[1] !== "" && table[2] !== "" && table[3] !== "" &&
+								table[4] !== "" && table[5] !== "" && table[6] !== "" &&
+								table[7] !== "" && table[8] !== "" && table[9] !== "")
+				{
+					alert("tie!")
+					table = ["x",
+						"","","",
+						"","","",
+						"","",""]
+					location.reload();
+				}
+			}
+		</script>
+		<div>
+			<table>
+			  <tr id="tr1">
+			  </tr>
+			  <tr id="tr2">
+			  </tr>
+			  <tr id="tr3">
+			  </tr>
+			</table>
+		</div>
+	</body>
+</html>

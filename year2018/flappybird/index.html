@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JonnyIsBoss</title>
+    <meta charset="utf-8" />
+    <style>
+      canvas {background: lightgray;}
+    </style>
+  </head>
+ <body>
+  <canvas id="myCanvas" width="500" height="600"></canvas>
+  <script>
+  // canvas related vars
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+  var character = [], pipes = [];
+  let speed = 10;
+  let slowfall = 1;
+  let slowFallCD = slowfall;
+  var jump = false;
+  var cdJump = 10;
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+  document.addEventListener("mousemove", mouseMoveHandler, false);
+  function mouseMoveHandler(e) {
+    let mouseX = e.clientX - canvas.offsetLeft;
+  	let mouseY = e.clientY;
+    console.log(mouseX, mouseY)
+  }
+  function keyDownHandler(e) {
+    if(e.keyCode == 32) {
+      jump = true;
+    }
+  }
+  function keyUpHandler(e) {
+    if(e.keyCode == 32) {
+      jump = false;
+    }
+  }
+  //Objects
+  class Player {
+    constructor(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = "orange";
+      ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.fill();
+      ctx.closePath();
+    }
+    collision(otherobj) {
+      let crash = true;
+      if ((this.y + (this.height) < otherobj.y) || (this.y > otherobj.y + (otherobj.height)) ||
+      (this.x + (this.width) < otherobj.x) || (this.x > otherobj.x + (otherobj.width))) {
+          crash = false;
+      }
+      return crash;
+    }
+  }
+  class Pipe {
+    constructor(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = "green";
+      ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.fill();
+      ctx.closePath();
+    }
+    collision(otherobj) {
+      let crash = true;
+      if ((this.y + (this.height*2) < otherobj.y) || (this.y > otherobj.y + (otherobj.height*2)) ||
+      (this.x + (this.width*2) < otherobj.x) || (this.x > otherobj.x + (otherobj.width*2))) {
+          crash = false;
+      }
+      return crash;
+    }
+  }
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+  function rndTick() {
+    let chance = 100;
+    let spawn = getRndInteger(1,chance);
+    if (spawn == chance) {
+      let rnd = getRndInteger(100,300);
+      let pipe1 = new Pipe(canvas.width,0,50,rnd);
+      let pipe2 = new Pipe(canvas.width,canvas.height-(canvas.height-rnd*0.6)/2,50,(canvas.height-rnd*0.6));
+      pipes.push(pipe1,pipe2);
+    }
+  }
+
+  character.push(new Player(canvas.width/2,canvas.height/2,20,20));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let player = character[0]
+    rndTick();
+    //Worldborder collision
+    if (player.y <= canvas.height-player.height && player.y >= 0) {
+      if (slowFallCD != 0) {
+        player.y += (speed/5)*slowFallCD;
+        slowFallCD++
+      }
+      if (slowFallCD != 0) {
+        slowFallCD = slowfall;
+      }
+      if (jump && cdJump == 0) {
+        player.y -= speed*4;
+        cdJump = 10;
+      }
+      if (cdJump != 0) {
+        cdJump--
+      }
+    }
+    console.log(player.y)
+    //Dodge mechanix
+    //Enemy draw + collision notallow //Change speed on some
+    for (var i = 0; i < pipes.length; i++) {
+      let pipe = pipes[i];
+      pipe.x -= 1;
+      pipe.draw();
+      if (player.collision(pipe)) {
+        console.log("hit")
+      }
+    }
+    //Player draw
+    player.draw();
+    requestAnimationFrame(draw);
+  }
+  draw();
+  </script>
+ </body>
+</html>

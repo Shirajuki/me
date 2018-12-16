@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JonnyIsBoss</title>
+    <meta charset="utf-8" />
+    <style>
+      canvas {background: lightgray;}
+    </style>
+  </head>
+ <body>
+  <canvas id="myCanvas" width="500" height="500"></canvas>
+  <script>
+  /*
+  SHARK - eat humans
+  SHIELD STOMP, hulk stomp
+  NINJA DASH
+  SHOOT follow mouse
+  */
+  // canvas related vars
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+  var character = [], npc = [], bullet = [];
+  var left = false, up = false, right = false, down = false, dodge = false;
+  var nspeed = 5, speed = nspeed, cdDodge = 0;
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+  document.addEventListener("mousemove", mouseMoveHandler, false);
+  function mouseMoveHandler(e) {
+    let mouseX = e.clientX - canvas.offsetLeft;
+  	let mouseY = e.clientY;
+    console.log(mouseX, mouseY)
+  }
+  function keyDownHandler(e) {
+    console.log(e.keyCode)
+    if(e.keyCode == 37 || e.keyCode == 65) {
+      left = true;
+    }
+    else if(e.keyCode == 38 || e.keyCode == 87) {
+      up = true;
+    }
+    else if(e.keyCode == 39 || e.keyCode == 68) {
+      right = true;
+    }
+    else if(e.keyCode == 40 || e.keyCode == 83) {
+      down = true;
+    }
+      else if(e.keyCode == 32) {
+      dodge = true;
+    }
+  }
+  function keyUpHandler(e) {
+    if(e.keyCode == 37 || e.keyCode == 65) {
+      left = false;
+    }
+    else if(e.keyCode == 38 || e.keyCode == 87) {
+      up = false;
+    }
+    else if(e.keyCode == 39 || e.keyCode == 68) {
+      right = false;
+    }
+    else if(e.keyCode == 40 || e.keyCode == 83) {
+      down = false;
+    }
+    else if(e.keyCode == 32) {
+      dodge = false;
+    }
+  }
+  //Objects
+  class Player {
+    constructor(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = "blue";
+      ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.fill();
+      ctx.closePath();
+    }
+    collision(otherobj) {
+      let crash = true;
+      if ((this.y + (this.height) < otherobj.y) || (this.y > otherobj.y + (otherobj.height)) ||
+      (this.x + (this.width) < otherobj.x) || (this.x > otherobj.x + (otherobj.width))) {
+          crash = false;
+      }
+      return crash;
+    }
+  }
+  class Shot {
+    constructor(x, y, dx, dy) {
+      this.x = x;
+      this.y = y;
+      this.dx = dx;
+      this.dy = dy;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.rect(this.x, this.y, 10, 10);
+      ctx.fill();
+      ctx.closePath();
+    }
+    collision(otherobj) {
+      let crash = true;
+      if ((this.y + (this.height*2) < otherobj.y) || (this.y > otherobj.y + (otherobj.height*2)) ||
+      (this.x + (this.width*2) < otherobj.x) || (this.x > otherobj.x + (otherobj.width*2))) {
+          crash = false;
+      }
+      return crash;
+    }
+  }
+  class Enemy {
+      constructor(x, y, width, height, mv) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.mv = mv;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.fillStyle = "red";
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.fill();
+        ctx.closePath();
+      }
+      collision(otherobj) {
+        let crash = true;
+        if ((this.y + (this.height*2) < otherobj.y) || (this.y > otherobj.y + (otherobj.height*2)) ||
+        (this.x + (this.width*2) < otherobj.x) || (this.x > otherobj.x + (otherobj.width*2))) {
+            crash = false;
+        }
+        return crash;
+      }
+    }
+    class Border {
+      constructor(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.fillStyle = "black";
+        ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.stroke();
+      ctx.closePath();
+    }
+  }
+  function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+  function rndTick() {
+    let chance = 20;
+    let spawn = getRndInteger(1,chance);
+    if (spawn == chance) {
+      let x = getRndInteger(worldBorder.x, worldBorder.x+worldBorder.width);
+      let y = getRndInteger(worldBorder.y, worldBorder.y+worldBorder.height);
+      let mv = getRndInteger(2,6);
+      let mob = new Enemy(x,y,20,20,mv)
+      npc.push(mob);
+      console.log("Spawned at x:"+mob.x+"and y:"+mob.y);
+    }
+  }
+
+  character.push(new Player(0,0,20,20));
+  let worldBorder = new Border(-1000,-1000,2000,2000);
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let player = character[0]
+    //Center the player
+    ctx.save();
+    ctx.translate(canvas.width/2-player.x-player.width/2, canvas.height/2-player.y-player.height/2);
+    worldBorder.draw();
+    rndTick();
+    let shield = new Shot(player.x+player.width,player.y+player.height,20,20);
+    shield.draw();
+    //Worldborder collision
+    if (left && player.x >= worldBorder.x+player.width/2) {
+      player.x -= speed;
+    }
+    if (up && player.y >= worldBorder.y+player.height/2) {
+      player.y -= speed;
+    }
+    if (right && player.x <= worldBorder.x+worldBorder.width-player.width*1.5) {
+      player.x += speed;
+    }
+    if (down && player.y <= worldBorder.y+worldBorder.height-player.height*1.5) {
+      player.y += speed;
+    }
+    //Dodge mechanix
+    if (dodge && cdDodge == 0) {
+      speed *= 7
+      cdDodge = 100;
+      setTimeout(function() {speed = nspeed;},cdDodge);
+    }
+    if (cdDodge != 0) {
+      cdDodge--
+      //console.log(cdDodge)
+    }
+    //Enemy draw + collision notallow //Change speed on some
+    if (npc.length > 1) {
+      for (var i = 0; i < npc.length-1; i++) {
+        let enemy = npc[i];
+        let enemy2 = npc[i+1]
+        if (!enemy.collision(enemy2)) {
+          if (enemy.x > player.x) {
+        		enemy.x -= speed/enemy.mv;
+        	} else {
+        		enemy.x += speed/enemy.mv;
+        	}
+      		if (enemy.y > player.y) {
+        	  shield.y -= speed/enemy.mv;
+    		  } else {
+        	  enemy.y += speed/enemy.mv;
+        	}
+        }
+        enemy.draw();
+        if (player.collision(enemy)) {
+          npc.splice(i, 1);
+        }
+      }
+    }
+    //Player draw
+    player.draw();
+    requestAnimationFrame(draw);
+    ctx.restore();
+  }
+  draw();
+  </script>
+ </body>
+</html>
