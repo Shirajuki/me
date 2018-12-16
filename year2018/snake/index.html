@@ -138,7 +138,7 @@
   function upSnake() {
     let snakeee = snake[0];
     let head = {x: snakeee.x + dx, y: snakeee.y+dy};
-    console.log(head.x, head.y)
+    //console.log(head.x, head.y)
     for (var i = 0; i < snake.length; i++) {
       if (head.x === snake[i].x && head.y === snake[i].y) {
         reset();
