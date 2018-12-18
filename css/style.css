@@ -149,6 +149,15 @@ body {
   margin: 0 15px;
   font-weight: normal;
 }
+.n1 {
+  box-shadow: 0 0 10px 2px gold;
+}
+.n2 {
+  box-shadow: 0 0 10px 2px gold;
+}
+.n3 {
+  box-shadow: 0 0 10px 2px gold;
+}
 /*footer*/
 .footer {
   display: inline-block;
