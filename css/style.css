@@ -7,6 +7,7 @@ h1 , strong{ overflow:hidden; display:none; }
 
 html{
   overflow-x: hidden;
+  zoom: 0.7;
 }
 body {
   width: 100%;

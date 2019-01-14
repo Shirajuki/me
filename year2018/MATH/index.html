@@ -10,7 +10,6 @@
     </style>
   </head>
   <body>
-
     <canvas id="myCanvas" width="400" height="700"></canvas>
     <script>
     let canvas = document.getElementById("myCanvas");
@@ -27,6 +26,7 @@
 
     window.onload = loading
     function loading() {
+      alert("Matte spill, sett modus ved å trykke på grå knapp øverst-høyre hjørne. Kan bruke tastatur.\n\nHøyreklikk + vis sidekilde, for å se kode.")
       updateDifficulty();
       newProblem();
       draw();

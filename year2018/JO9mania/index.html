@@ -7,6 +7,9 @@
 	canvas{background: black;}
 	* { padding: 0; margin: 0; }
     canvas {display: block; margin: 0 auto; }
+    html {
+      zoom: 0.7;
+    }
 </style>
  <body>
 
@@ -43,6 +46,7 @@ let offsetY = bb.top;
 
 window.onload = loading
 function loading() {
+  alert("Rytmespill uten lyd/rythme :D\nspilles med tastene s,d,k,l når kulen kommer til riktig punkt.\n\nHøyreklikk + vis sidekilde, for å se kode.")
   if (gameStatus) {
     draw();
   }else {
